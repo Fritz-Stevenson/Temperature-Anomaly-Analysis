@@ -1,0 +1,35 @@
+import pandas as pd
+import numpy as np
+# city_temperature.csv found here: 'https://www.kaggle.com/sudalairajkumar/daily-temperature-of-major-cities'
+
+# First we'll set up a dataframe by reading the csv file with pandas
+temp_record = pd.read_csv('city_temperature.csv')
+
+# We will clean the dataframe by setting missing columns in the 'State' column to 'None' to match the existing string data type 
+temp_record.fillna('None')
+
+# First we will start to understand the dataframes' scope if it isn't presented. Printing some key elements
+city_list = sorted(list(set(temp_record['City'])))
+region_list = set(list(temp_record['Region']))
+print(city_list, '\n', region_list, '\n', len(city_list), len(temp_record))
+
+# Random flex to narrow down data and get a sense of the proportional scope by region
+cities_in_Africa = list(set(temp_record['City'].loc[temp_record['Region']=='Africa'])))
+cities_in_NA = list(set(temp_record['City'].loc[temp_record['Region']=='North America']))
+cities_in_EU = list(set(temp_record['City'].loc[temp_record['Region']=='Europe']))
+cities_in_Asia = list(set(temp_record['City'].loc[temp_record['Region']=='Asia']))
+cities_in_SCAC = list(set(temp_record['City'].loc[temp_record['Region']=='South/Central America & Carribean']))
+print(f'Africa:{len(cities_in_Africa)}, Asia: {cities_in_Asia}, EU: {cities_in_EU}, NA: {cities_in_NA}, SCAC: {cities_in_SCAC}')
+
+
+# Pivot table exercise to present regional average temperature by month
+pivot_table = pd.pivot_table(temp_record, values='AvgTemperature', index=['Month'], columns=['Region'], aggfunc=np.mean)
+print(pivot_table.head(12))
+
+#Monthly average temperatures for africa came out static. Let's get a finer picture of the city data in africa
+
+pivot_table = pd.pivot_table(temp_record, values='AvgTemperature', index=['Region', 'City'], columns=['Month'], aggfunc=np.mean)
+print(pivot_table.head(12))
+
+'''This demonstrates the variance of yearly temperature trends by region. Averages and standard deviations will need to be assessed by city and month to provide accurate
+outlier analysis. In the next exercise, City-Regional-Analysis, we will be exploring more detailed analysis.'''
