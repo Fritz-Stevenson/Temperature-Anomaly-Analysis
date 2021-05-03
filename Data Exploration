@@ -31,4 +31,4 @@ pivot_table = pd.pivot_table(temp_record, values='AvgTemperature', index=['Regio
 print(pivot_table.head(12))
 
 '''This demonstrates the variance of yearly temperature trends by region. Averages and standard deviations will need to be assessed by city and month to provide accurate
-outlier analysis. In the next exercise, City-Regional-Analysis, we will be exploring more detailed analysis.'''
+outlier analysis. In the next exercise, Regional-City-Analysis, we will be exploring more detailed analysis.'''
