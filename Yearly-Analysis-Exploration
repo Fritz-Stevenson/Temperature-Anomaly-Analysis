@@ -1,4 +1,4 @@
-# This script tests pandas/numpy functionality and explores difference in yearly average temperature for the globe.
+# This script tests pandas/numpy functionality and explores differences in yearly temperatures across the globe.
 
 import pandas as pd
 import numpy as np
@@ -53,3 +53,47 @@ temp_record = temp_record.loc[temp_record['Year'].isin(range(1995,2021))]
 print(len(temp_record.index))
 
 # With this we've eliminated 420 dirty rows.
+
+# And now, with a slightly modified version of yearly_averages_4, we can print a clean table of yearly averages.
+
+def all_yearly_averages():
+    return pd.pivot_table(temp_record, values='AvgTemperature', index='Year',
+                          aggfunc=np.average)
+# print(all_yearly_averages())
+
+#This is not the full extent of the information we can extract from the dataset about yearly temperatures; let's find out about the standard deviation:
+
+def all_yearly_std():
+    return pd.pivot_table(temp_record, values='AvgTemperature', index=['Year'],
+                              aggfunc=np.std)
+# print(all_yearly_std())
+
+'''What is wrong with the data and function above? You may notice that not only is the standard deviation quite large for most years, but there seems to be a distinct outlier
+in year 2020. Is there a problem with our data?'''
+
+# Let's check the number of unique cities present in each year to check the congruity of data.
+def get_yearly_city_count():
+    for year in range(1995, 2021):
+        city_count = len(list(set(temp_record['City'].loc[temp_record['Year'] == year].values)))
+        print(f'{year} city count: {city_count}')
+# get_yearly_city_count()
+
+# While the number of cities decreases slightly over time, it does not correlate to a diminishing variation, as that is only distinctly present in 2020.
+
+''' Are there any other problems present? If you look closely at the all_yearly_std() function, we are finding the standard deviation for values grouped by year, for 
+all cities. This obscures the variance in regional or local places: santa fe could post 70 degree days all year while addis ababa might swing between 20 and 100 daily. None
+of this is captured. We need to find average variance by city by year. We could write a confusing loop, but we already laid out the pieces to accomplish this easily.'''
+
+def new_all_yearly_std():
+    return pd.pivot_table(temp_record, values='AvgTemperature', index=['Year', 'City'],
+                              aggfunc=np.std)
+                              
+print(pd.pivot_table(new_all_yearly_std(), values='AvgTemperature', index='Year',
+                          aggfunc=np.average))
+
+''' You can see that the data fed into the pivot table is actually a separate standard deviation pivot table grouped by year and city. These city temperature standard 
+deviations are then simplified into only year groupings and an average is applied to the sets of standard deviations. The final result is the average for all cities' standard 
+deviations of daily temperatures. The result is similar, but now more precise. In the next exercise we will plot this data in the most descriptive way possible.'''
+
+
+
